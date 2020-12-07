@@ -5,5 +5,7 @@ null,
 {"id":3,"battlerName":"Actor3_7","characterIndex":6,"characterName":"Actor3","classId":5,"equips":[3,0,2,3,4],"faceIndex":6,"faceName":"Actor3","traits":[],"initialLevel":1,"maxLevel":99,"name":"Marsha","nickname":"","note":"<equip slot: Body a3>","profile":""},
 {"id":4,"battlerName":"Actor2_7","characterIndex":6,"characterName":"Actor2","classId":4,"equips":[4,0,2,3,4],"faceIndex":6,"faceName":"Actor2","traits":[],"initialLevel":1,"maxLevel":99,"name":"Lucius","nickname":"","note":"","profile":""},
 {"id":5,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":20,"maxLevel":99,"name":"Lethe","nickname":"","note":"","profile":""},
-{"id":6,"battlerName":"","characterIndex":1,"characterName":"MVhorse-solidcolors_walk","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"Horse","nickname":"","note":"","profile":""}
+{"id":6,"battlerName":"","characterIndex":1,"characterName":"MVhorse-solidcolors_walk","classId":6,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"Horse","nickname":"","note":"","profile":""},
+{"id":7,"battlerName":"Gunther","characterIndex":2,"characterName":"villager-males_1","classId":2,"equips":[1,1,2,3,0],"faceIndex":0,"faceName":"Gunther","traits":[],"initialLevel":1,"maxLevel":99,"name":"Gunther","nickname":"","note":"","profile":""},
+{"id":8,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""}
 ]
