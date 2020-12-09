@@ -2685,7 +2685,7 @@ ICF.ParamCore.Version = 109; // 1.09
 // Parameter Variables
 //=============================================================================
 
-ICF.Parameters = PluginManager.parameters('ICFSoft_ParamsCore');
+ICF.Parameters = PluginManager.parameters('ICF_ParamsCore');    //?? was ICFSoft_ParamsCore and therefore wrong
 ICF.Param = ICF.Param || {};
 
 if (!Imported.ICFSoft_MainUtility) {throw new Error('This plugin requires ICF-Soft Main Utility plugin version 1.05 to work.\nYou can download it at icfsoft.blogspot.com inside plugins section.');}
