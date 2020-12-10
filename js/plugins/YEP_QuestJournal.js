@@ -1688,6 +1688,13 @@ Yanfly.Quest.version = 1.02;
  * @desc Modify the data used by this quest entry.
  * Refer to Help for more information about each setting.
  * @default
+ * 
+ * @param Quest 101
+ * @parent ---Quest List---
+ * @type struct<Quest>
+ * @desc Modify the data used by this quest entry.
+ * Refer to Help for more information about each setting.
+ * @default
  */
 //=============================================================================
 /* Plugin Parameter Structure Settings
@@ -2777,7 +2784,7 @@ DataManager.questDataFailsafe = function(id, data) {
 
 DataManager.questDatabaseCreate = function() {
   $dataQuests = [null];
-  for (var i = 1; i <= 100; ++i) {
+  for (var i = 1; i <= 200; ++i) {
     var questData = JSON.parse(Yanfly.Parameters['Quest ' + i] || 'null');
     if (!questData) continue;
     this.questDatabaseAdd(i, questData);
@@ -3653,9 +3660,13 @@ Game_System.prototype.isQuestObjectiveFailed = function(questId, objId) {
     return false;
   }
 };
+//?? no simple way to check for active quest? 
+Game_System.prototype.isQuestKnown = function(questId) {
+  return (this._questsKnown.contains(questId));
+};
 
 Game_System.prototype.isQuestObjectiveUncleared = function(questId, objId) {
-  if (this._questsKnown.contains(questId)) {
+  if (this._questsKnown.contains(questId)) {   
     return !this.isQuestObjectiveCompleted(questId, objId) &&
       !this.isQuestObjectiveFailed(questId, objId)
   } else {

@@ -146,10 +146,10 @@ DoubleX_RMMV.Status_Bars = {
      * Each status must be represented by the name of its battler getter
      */
     STATUSES: [
-        'hp',
+        /*'hp',
         'mp',
-        'tp',
-        'ts'
+        'tp',*/
+        'lust'
     ],
 
     /*------------------------------------------------------------------------
@@ -404,7 +404,7 @@ DoubleX_RMMV.Status_Bars = {
     TS: function () { // v1.00a - v1.01a; Potential Hotspot
         return {
             // Sets the tp bar to be always visible
-            visible: function (battler) { return battler.isAlive(); }, // Hotspot
+            visible: function (battler) { return battler.isAlive(); },// && (battler.isSelected() || battler.actorId); }, // Hotspot
             // Sets the tp bar opacity to be always 255
             opacity: function (battler) { return 255; }, // Hotspot
             // Sets the tp bar color 1 to be always text color 15
@@ -440,7 +440,7 @@ DoubleX_RMMV.Status_Bars = {
             // Sets the minimum tp to be shown on the hp bar to be always 0
             min: function (battler) { return 0; }, // Hotspot
             // Sets maximum tp to be shown on the hp bar to be always maxTp()
-            max: function (battler) { return 100; /*battler.mts;*/ }, // Hotspot
+            max: function (battler) { return battler.lustMax; /*battler.mts;*/ }, // Hotspot
             // (v1.01a+)Sets the tp change processes to be always shown
             showProc: function (battler) { return true; }, // Hotspot
             // (v1.01a+)Sets the mp change processes rate to be 100% of the
@@ -763,6 +763,7 @@ function Window_Status_Bar() { this.initialize.apply(this, arguments); }
     // v1.00a - v1.00a
         this._battler = battler;
         this._status = status;
+        this._cycles = 0;
         this._updateCfg(battler, status);
         if (this._cfg) {
             Window_Base.prototype.initialize.call(this, this._cfg.x(battler),
@@ -796,7 +797,9 @@ function Window_Status_Bar() { this.initialize.apply(this, arguments); }
     Window_Status_Bar.prototype.update = function() {
     // v1.00a - v1.00a; Hotspot
         Window_Base.prototype.update.call(this);
+       //if(this._cycles%2==1) 
         this._updateBarStatuses(this._battler);
+        this._cycles +=1;
     }; // Window_Status_Bar.prototype.update
 
     /* Updates all statuses of this status bar

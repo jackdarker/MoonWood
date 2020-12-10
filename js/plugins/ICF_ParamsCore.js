@@ -3757,8 +3757,11 @@ Game_BattlerBase.prototype.refresh = function() {
 	ICF.ParamCore.battlerRefresh.call(this);
 	if (!this._CParamValues) this._CParamValues = [];
 	for (var i = 0; i < ICF.Param.CParamsMax.length; i++) {
-		if (this._CParamValues[i] === undefined) this._CParamValues[i] = this.CParam(i);
-		this._CParamValues[i] = this._CParamValues[i].clamp(0, this.CParam(i));
+        if (this._CParamValues[i] === undefined) {
+            this._CParamValues[i] = this.CParam(i);
+            this.resetCParamValue(i);// 
+        }
+        this._CParamValues[i] = this._CParamValues[i].clamp(0, this.CParam(i));
 	}
 };
 
