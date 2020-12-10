@@ -425,7 +425,7 @@ DoubleX_RMMV.Status_Bars = {
             h: function (battler) { return 16; }, // Hotspot
             // Sets the tp bar description text to be always tp/maxTp()
             text: function (battler) { // Hotspot
-                return battler.lust.toString() + '/' + '100'; //todo battler.mts.toString();
+                return battler.lust.toString() + '/' + battler.lustMax.toString();
             },
             // Sets the tp bar description text size to be always 0
             textX: function (battler) { return 0; }, // Hotspot

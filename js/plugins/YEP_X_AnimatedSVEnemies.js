@@ -2770,7 +2770,7 @@ Sprite_Animation.prototype.updatePosition = function() {
 };
 
 Sprite_Animation.prototype.updateSvePosition = function() {
-  if (typeof this._target.parent._battler != 'undefined' && this._target.parent._battler.isEnemy() && typeof this._target.parent._mainSprite != 'undefined'){
+  if (typeof this._target.parent._battler != 'undefined' && this._target.parent._battler!=null && this._target.parent._battler.isEnemy() && typeof this._target.parent._mainSprite != 'undefined'){
     if (this._animation.position !== 3) {
       if (this._animation.position === 0) {
         this.y += this._target.parent._mainSprite.height - this._target.parent.texture.height;
