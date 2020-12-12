@@ -1,0 +1,1 @@
+{"Scene_Menu":{"Window_MenuCommand":{},"Window_MenuStatus":{"opacity":"255","width":"784","height":"720","rows":"4","cols":"1","x":240,"y":0},"Window_Gold":{}},"Scene_Status":{"Window_MenuStatus":{},"Window_Help":{},"Window_StatusCommand":{},"Window_SkillStatus":{},"Window_StatusInfo":{}}}
