@@ -478,27 +478,40 @@ Imported.YED_SideviewBattler = true;
 (function() {
     Game_Battler.prototype.getBattler = function() {
         var battler;
-
+        //if(this._sideviewBattler) {
+        //    return this._sideviewBattler;
+        //}
         if (this.isActor()) {
+            
             battler = this.actor();
         }
 
         if (this.isEnemy()) {
-            battler = this.enemy();
+            if (this.isStateAffected(11)) {
+                battler = $dataEnemies[5];
+             } else {
+                battler = this.enemy();
+             }
         }
-
+        //if(!!battler) {
+        //    this._sideviewBattler = JSON.parse(JSON.stringify(battler.getSideviewBattler()));    //deep copy from $dataEnemys
+        //    return(this._sideviewBattler);
+        //}
+        //return(null);
         return !!battler ? battler : null;
     };
 
     Game_Battler.prototype.getSideviewBattler = function() {
         var battler = this.getBattler();
 
+        //return !!battler ? battler : null;//battler.getSideviewBattler() : null;
         return !!battler ? battler.getSideviewBattler() : null;
     };
 
     Game_Battler.prototype.isSideviewBattler = function() {
         var battler = this.getBattler();
 
+        //return !!battler ? battler.filename !== "" && !battler.default : false;//battler.isSideviewBattler() : false;
         return !!battler ? battler.isSideviewBattler() : false;
     };
 
