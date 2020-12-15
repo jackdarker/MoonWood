@@ -28,7 +28,7 @@ importClass(Packages.com.sun.star.uno.Type);
 function isNumber(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
-/*
+
 function toArray(sheet) {
     var master = [];
 
@@ -73,6 +73,7 @@ function toArray(sheet) {
     return master;
 
 }
+/*
 function toObjectOfObject(sheet) {
 
     var master = {};

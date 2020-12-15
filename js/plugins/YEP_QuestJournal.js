@@ -986,6 +986,12 @@ Yanfly.Quest.version = 1.02;
  * @desc Add custom code to each of the plugin's major functions.
  * @default {"---Quest Menu---":"","Before Create Windows":"\"// Variables\\n//   background - background image used for the menu\\n//   windowLayer - sprite layer that contains all windows\\n//\\n// background.bitmap = ImageManager.loadTitle1(\\\"Book\\\");\\n// this.fitScreen(background);\"","After Create Windows":"\"// Variables\\n//   background - background image used for the menu\\n//   windowLayer - sprite layer that contains all windows\"","Close Quest Menu":"\"// Variables\\n//   background - background image used for the menu\\n//   windowLayer - sprite layer that contains all windows\"","---Quest Status---":"","Quest Add":"\"// Variables:\\n//   questId - ID of the quest being added\\n//\\n// console.log('Quest ' + questId + ' successfully added!')\"","Quest Remove":"\"// Variables:\\n//   questId - ID of the quest being removed\\n//\\n// console.log('Quest ' + questId + ' successfully removed!')\"","Quest Complete":"\"// Variables:\\n//   questId - ID of the quest set to completed\\n//\\n// console.log('Quest ' + questId + ' status changed to Completed!')\"","Quest Fail":"\"// Variables:\\n//   questId - ID of the quest set to failed\\n//\\n// console.log('Quest ' + questId + ' status changed to Failed!')\"","Quest Available":"\"// Variables:\\n//   questId - ID of the quest set to available\\n//\\n// console.log('Quest ' + questId + ' status changed to Available!')\"","---Description---":"","Change Description":"\"// Variables:\\n//   questId - ID of the quest whose description is changed\\n//   index - Description index being changed to\\n//\\n// console.log('Quest ' + questId + ' description index changed to ' + index)\"","---Objectives---":"","Show Objective":"\"// Variables:\\n//   questId - ID of the quest whose objectives are altered\\n//   objectiveId - ID of the objective being shown\\n//\\n// console.log('Quest ' + questId + ' objective ' + objectiveId + ' changed to shown!')\"","Hide Objective":"\"// Variables:\\n//   questId - ID of the quest whose objectives are altered\\n//   objectiveId - ID of the objective being hidden\\n//\\n// console.log('Quest ' + questId + ' objective ' + objectiveId + ' changed to hidden!')\"","Complete Objective":"\"// Variables:\\n//   questId - ID of the quest whose objectives are altered\\n//   objectiveId - ID of the objective being completed\\n//\\n// console.log('Quest ' + questId + ' objective ' + objectiveId + ' changed to completed!')\"","Fail Objective":"\"// Variables:\\n//   questId - ID of the quest whose objectives are altered\\n//   objectiveId - ID of the objective having failed\\n//\\n// console.log('Quest ' + questId + ' objective ' + objectiveId + ' changed to failed!')\"","Normalize Objective":"\"// Variables:\\n//   questId - ID of the quest whose objectives are altered\\n//   objectiveId - ID of the objective normalized\\n//\\n// console.log('Quest ' + questId + ' objective ' + objectiveId + ' changed to normal!')\"","---Rewards---":"","Show Reward":"\"// Variables:\\n//   questId - ID of the quest whose rewards are altered\\n//   rewardId - ID of the reward being shown\\n//\\n// console.log('Quest ' + questId + ' reward ' + rewardId + ' becomes shown!')\"","Hide Reward":"\"// Variables:\\n//   questId - ID of the quest whose rewards are altered\\n//   rewardId - ID of the reward being hidden\\n//\\n// console.log('Quest ' + questId + ' reward ' + rewardId + ' becomes hidden!')\"","Claim Reward":"\"// Variables:\\n//   questId - ID of the quest whose rewards are altered\\n//   rewardId - ID of the reward becoming claimed\\n//\\n// console.log('Quest ' + questId + ' reward ' + rewardId + ' is now claimed!')\"","Deny Reward":"\"// Variables:\\n//   questId - ID of the quest whose rewards are altered\\n//   rewardId - ID of the reward becoming denied\\n//\\n// console.log('Quest ' + questId + ' reward ' + rewardId + ' is now denied!')\"","Normalize Reward":"\"// Variables:\\n//   questId - ID of the quest whose rewards are altered\\n//   rewardId - ID of the reward normalized\\n//\\n// console.log('Quest ' + questId + ' reward ' + rewardId + ' is normalized!')\"","---Subtext---":"","Change Subtext":"\"// Variables:\\n//   questId - ID of the quest whose subtext is changed\\n//   index - Subtext index being changed to\\n//\\n// console.log('Quest ' + questId + ' subtext index changed to ' + index)\""}
  *
+ * @param QuestFile
+ * @parent
+ * @type string
+ * @desc json-file in ./data with questdata. if empty uses the entrys from the questlist
+ * @default
+ * 
  * @param ---Quest List---
  * @default
  *
@@ -2691,7 +2697,7 @@ Yanfly.Param.QuestCmdName = String(Yanfly.Parameters['Quest Command']);
 Yanfly.Param.QuestCmdShow = eval(Yanfly.Parameters['Show Command']);
 Yanfly.Param.QuestCmdEnable = eval(Yanfly.Parameters['Enable Command']);
 Yanfly.Param.QuestCmdPlace = eval(Yanfly.Parameters['Auto Place Command']);
-
+Yanfly.Param.QuestFile = String(Yanfly.Parameters['QuestFile']);
 Yanfly.Param.QuestCategoryWindow = 
   JSON.parse(Yanfly.Parameters['Quest Category Window']);
 Yanfly.Param.QuestListWindow = 
@@ -2782,13 +2788,37 @@ DataManager.questDataFailsafe = function(id, data) {
   return data;
 };
 
+DataManager.file = {};
+//this is copied from GALV.QuestLog
+DataManager.parseFile = function(filePath) {
+	var request = new XMLHttpRequest();
+	request.open("GET", filePath);
+	request.overrideMimeType('application/json');
+	request.onload = function() {
+		if (request.status < 400) {
+      console.log(request.responseText);
+      var data = JSON.parse(request.responseText);
+      Object.keys(data).forEach(key => {
+        console.log(`${key}: ${data[key]}, ${JSON.parse(data[key])['Title']}`);
+        DataManager.questDatabaseAdd(parseInt(key.replace('Quest ', '')), JSON.parse(data[key]));
+      });
+ 			$dataQuests.push();
+		}
+	};
+	request.send();
+};
 DataManager.questDatabaseCreate = function() {
   $dataQuests = [null];
+  //read data from plugin setting...
   for (var i = 1; i <= 200; ++i) {
     var questData = JSON.parse(Yanfly.Parameters['Quest ' + i] || 'null');
     if (!questData) continue;
     this.questDatabaseAdd(i, questData);
   };
+  //...but if there is a file this will replace/add entrys
+  if(Yanfly.Parameters.QuestFile!="") {
+    this.parseFile(Yanfly.Parameters.QuestFile);
+  }
 };
 
 DataManager.questDatabaseCreate();
