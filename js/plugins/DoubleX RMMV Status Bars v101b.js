@@ -146,9 +146,9 @@ DoubleX_RMMV.Status_Bars = {
      * Each status must be represented by the name of its battler getter
      */
     STATUSES: [
-        /*'hp',
+        'hp',
         'mp',
-        'tp',*/
+        'tp',
         'lust'
     ],
 
@@ -412,13 +412,13 @@ DoubleX_RMMV.Status_Bars = {
                 return this.textColor(15);
             },
             // Sets the tp bar color 1 to be always text color 28
-            color1: function (battler) { return this.textColor(28); }, // Hotspot
+            color1: function (battler) { return this.textColor(13); }, // Hotspot
             // Sets the tp bar color 2 to be always text color 29
-            color2: function (battler) { return this.textColor(29); }, // Hotspot
+            color2: function (battler) { return this.textColor(5); }, // Hotspot
             // Sets the tp bar x offset from battler sprite to be always 0
             x: function (battler) { return 0; }, // Hotspot
             // Sets the tp bar y offset from battler sprite to be always 48
-            y: function (battler) { return 48; }, // Hotspot
+            y: function (battler) { return 64; }, // Hotspot
             // Sets the tp bar width to be always 87
             w: function (battler) { return 87; }, // Hotspot
             // Sets the tp bar height to be always 16
@@ -447,10 +447,10 @@ DoubleX_RMMV.Status_Bars = {
             // max length of the mp bar per second
             procUpdateRate: function (battler) { return 0.2; }, // Hotspot
             // Sets the tp change process color 1 to be always text color 3
-            procColor1: function (battler) { return this.textColor(3); },
+            procColor1: function (battler) { return this.textColor(5); },
             // Hotspot
             // Sets the tp change process color 2 to be always text color 24
-            procColor2: function (battler) { return this.textColor(24); }
+            procColor2: function (battler) { return this.textColor(10); }
             // Hotspot
         };
     },
