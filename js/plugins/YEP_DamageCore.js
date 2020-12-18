@@ -1363,9 +1363,9 @@ Game_Action.prototype.evalDamageFormula = function (target) {
     var value = 0;
     if (item.damage.custom) {
       eval(item.damage.formula);
-      value = Math.max(value, 0) * sign;
+      value = value*sign; //Math.max(value, 0) * sign;  changed because of lustdamage
     } else {
-      value = Math.max(eval(item.damage.formula), 0) * sign;
+      value = sign* eval(item.damage.formula);//?? Math.max(eval(item.damage.formula), 0) * sign;
     }
     return value;
   } catch (e) {

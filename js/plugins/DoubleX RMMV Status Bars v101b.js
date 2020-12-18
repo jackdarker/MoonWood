@@ -425,7 +425,7 @@ DoubleX_RMMV.Status_Bars = {
             h: function (battler) { return 16; }, // Hotspot
             // Sets the tp bar description text to be always tp/maxTp()
             text: function (battler) { // Hotspot
-                return battler.lust.toString() + '/' + battler.lustMax.toString();
+                return battler.lust.toString() + '/' + battler.lustmax.toString();
             },
             // Sets the tp bar description text size to be always 0
             textX: function (battler) { return 0; }, // Hotspot
@@ -440,7 +440,7 @@ DoubleX_RMMV.Status_Bars = {
             // Sets the minimum tp to be shown on the hp bar to be always 0
             min: function (battler) { return 0; }, // Hotspot
             // Sets maximum tp to be shown on the hp bar to be always maxTp()
-            max: function (battler) { return battler.lustMax; /*battler.mts;*/ }, // Hotspot
+            max: function (battler) { return battler.lustmax; /*battler.mts;*/ }, // Hotspot
             // (v1.01a+)Sets the tp change processes to be always shown
             showProc: function (battler) { return true; }, // Hotspot
             // (v1.01a+)Sets the mp change processes rate to be 100% of the

@@ -853,7 +853,7 @@ E-mail: kuznetsovdenis96@gmail.com
  * @parent startTime
  * @desc Time speed (if not using real time)
  * @type number
- * @min 1
+ * @min 0
  * @max 60
  * @default 1
 
@@ -2550,6 +2550,14 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
         }
         case 'SetGameTimeSpeed': {
             $gameTime.speed = Number(args[0]);
+            break;
+        }
+        case 'GameTimeAdd': {
+            $gameTime.add(args[0], eval(args[1]));   //??
+            break;
+        }
+        case 'GameTimeRem': {
+            $gameTime.rem(args[0], eval(args[1]));   //??
             break;
         }
         case 'GameTimeSet': {

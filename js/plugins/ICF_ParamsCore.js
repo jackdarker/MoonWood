@@ -2871,12 +2871,12 @@ for (var i = 0; i < 8; i++) {
 }
 ICF.temp[0] = JSON.stringify(ICF.temp[0]);
 
-console.log('BParams');
-console.log(ICF.temp[0]);
-console.log('XParams');
-console.log(ICF.temp[1]);
-console.log('SParams');
-console.log(ICF.temp[2]);
+//console.log('BParams');
+//console.log(ICF.temp[0]);
+//console.log('XParams');
+//console.log(ICF.temp[1]);
+//console.log('SParams');
+//console.log(ICF.temp[2]);
 
 ICF.Param.ParamCoreHalt = ICF.Parameters['Developer HaltJS'].toLowerCase() === "true";
 
@@ -3280,7 +3280,7 @@ ICF.NotetagsProcessor.ParamCoreA = function(group) {
 			obj.basicCParam[indx] = [Number(RegExp.$2)];
 			if (!isNaN(Number(RegExp.$3))) obj.basicCParam[indx] = obj.basicCParam[indx].concat([Number(RegExp.$3)]);
 			if (!isNaN(Number(RegExp.$4))) obj.basicCParam[indx] = obj.basicCParam[indx].concat([Number(RegExp.$4)]);
-			if (!isNaN(Number(RegExp.$5))) obj.basicCParam[indx] = obj.basicCParam[indx].concat([Number(RegExp.$5)]);
+            if (!isNaN(Number(RegExp.$5))) obj.basicCParam[indx] = obj.basicCParam[indx].concat([Number(RegExp.$5)]);
 			}
 		else if (line.match(note6y)) {
 			cFlag = true;
@@ -5017,6 +5017,8 @@ Game_Action.prototype.executeCParamDamage = function(target, cparamId, value) {
     target.gainCParamValue(cparamId, -value);
     if (value > 0) {
         target.onDamage(value);
+    } else if(value<0) {
+        target.onDamage(-value);    //?? Lust-damage is increase; otherwise we would have to set it to recovery
     }
     this.gainDrainedCParam(cparamId, value);
 };
