@@ -62,7 +62,9 @@
         this._switchedRegions = [];
     };
 
-    Game_Map.prototype.regionId = function (x, y) { console.log(this._switchedRegions[this.tileId(x, y, 5)]); return this.isValid(x, y) ? this._changedRegions[x] ? this._changedRegions[x][y] ? this._changedRegions[x][y] : this._switchedRegions[this.tileId(x, y, 5)] ? this._switchedRegions[this.tileId(x, y, 5)] : this.tileId(x, y, 5) : this._switchedRegions[this.tileId(x, y, 5)] ? this._switchedRegions[this.tileId(x, y, 5)] : this.tileId(x, y, 5) : 0; };
+    Game_Map.prototype.regionId = function (x, y) { 
+        //??console.log(this._switchedRegions[this.tileId(x, y, 5)]); 
+        return this.isValid(x, y) ? this._changedRegions[x] ? this._changedRegions[x][y] ? this._changedRegions[x][y] : this._switchedRegions[this.tileId(x, y, 5)] ? this._switchedRegions[this.tileId(x, y, 5)] : this.tileId(x, y, 5) : this._switchedRegions[this.tileId(x, y, 5)] ? this._switchedRegions[this.tileId(x, y, 5)] : this.tileId(x, y, 5) : 0; };
 
     Game_Map.prototype.changeRegionId = function (x, y, value) {
         if (!this._changedRegions[x]) this._changedRegions[x] = [];

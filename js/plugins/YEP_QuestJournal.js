@@ -2796,10 +2796,10 @@ DataManager.parseFile = function(filePath) {
 	request.overrideMimeType('application/json');
 	request.onload = function() {
 		if (request.status < 400) {
-      console.log(request.responseText);
+      //console.log(request.responseText);
       var data = JSON.parse(request.responseText);
       Object.keys(data).forEach(key => {
-        console.log(`${key}: ${data[key]}, ${JSON.parse(data[key])['Title']}`);
+        //console.log(`${key}: ${data[key]}, ${JSON.parse(data[key])['Title']}`);
         DataManager.questDatabaseAdd(parseInt(key.replace('Quest ', '')), JSON.parse(data[key]));
       });
  			$dataQuests.push();

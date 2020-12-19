@@ -26,6 +26,13 @@ Yanfly.UCE.version = 1.01;
 * Set as 0 if you do not wish to run a common event.
 * @default 0
 *
+* @param New Game Event
+* @parent ---General---
+* @type common_event
+* @desc Run this common event each time the player starts a game.
+* Set as 0 if you do not wish to run a common event.
+* @default 0
+*
 * @param Battle Won Event
 * @parent ---General---
 * @type common_event
@@ -157,6 +164,7 @@ Yanfly.Param = Yanfly.Param || {};
 
 Yanfly.Param.UtilCommonEvents = {
   load: Number(Yanfly.Parameters['Load Game Event']) || 0,
+  new: Number(Yanfly.Parameters['New Game Event']) || 0,
   battleWon: Number(Yanfly.Parameters['Battle Won Event']) || 0,
   battleEscape: Number(Yanfly.Parameters['Battle Escape Event']) || 0,
   closeMenu: Number(Yanfly.Parameters['Close Menu Event']) || 0,
@@ -181,7 +189,14 @@ DataManager.loadGame = function (savefileId) {
   }
   return flag;
 };
-
+//??I need newgame event
+Yanfly.UCE.DataManager_setupNewGame = DataManager.setupNewGame;
+DataManager.setupNewGame = function () {
+  Yanfly.UCE.DataManager_setupNewGame.call(this);
+  if (Yanfly.Param.UtilCommonEvents['new'] > 0) {
+    $gameTemp.reserveCommonEvent(Yanfly.Param.UtilCommonEvents['new']);
+  }
+};
 //=============================================================================
 // Game_System
 //=============================================================================
