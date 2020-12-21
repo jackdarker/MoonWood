@@ -15,6 +15,8 @@
  *     Changes region iD at position (x, y) to specified iD
  *   2) ChangeRegionId switch <iD1> <iD2>
  *     Switches all region iDs equal to iD1 to iD2
+ *   3) ChangeRegionId unswitch <iD1>
+ *     undoes region-switch for original id1
  * 
  * Made for this : http://goo.gl/BPzqIv
  */
@@ -41,6 +43,9 @@
                 case "switch":
                     $gameMap.switchRegionId(Number(args[1]), Number(args[2]));
                     break;
+                case "unswitch":
+                        $gameMap.unswitchRegionId(Number(args[1]));
+                        break;
                 case "change":
                     $gameMap.changeRegionId(Number(args[1]), Number(args[2]), Number(args[3]));
                     break;
@@ -52,11 +57,7 @@
 
     //-----------------------------------------------------------------------------
     // Game_Map
-    //
-    // The game object class for a map. It contains scrolling and passage
-    // determination functions.
-
-    Game_Map.prototype.initialize = function () {
+     Game_Map.prototype.initialize = function () {
         _kocka_random_alias_intialize_l2h9HbeF.apply(this, arguments);
         this._changedRegions = [];
         this._switchedRegions = [];
@@ -64,15 +65,31 @@
 
     Game_Map.prototype.regionId = function (x, y) { 
         //??console.log(this._switchedRegions[this.tileId(x, y, 5)]); 
-        return this.isValid(x, y) ? this._changedRegions[x] ? this._changedRegions[x][y] ? this._changedRegions[x][y] : this._switchedRegions[this.tileId(x, y, 5)] ? this._switchedRegions[this.tileId(x, y, 5)] : this.tileId(x, y, 5) : this._switchedRegions[this.tileId(x, y, 5)] ? this._switchedRegions[this.tileId(x, y, 5)] : this.tileId(x, y, 5) : 0; };
+        if(!this.isValid(x, y)) return 0;
+        var _id = this._switchedRegions[this.tileId(x, y, 5)];
+        if( _id != null && _id != undefined  ) {
+            return _id;
+        } else if(this._changedRegions[x] && this._changedRegions[x][y]) {
+            return this._changedRegions[x][y];
+        }  else {
+            return(this.tileId(x, y, 5));
+        }
+
+        //return this.isValid(x, y) ? this._changedRegions[x] ? this._changedRegions[x][y] ? this._changedRegions[x][y] : this._switchedRegions[this.tileId(x, y, 5)] ? this._switchedRegions[this.tileId(x, y, 5)] : this.tileId(x, y, 5) : this._switchedRegions[this.tileId(x, y, 5)] ? this._switchedRegions[this.tileId(x, y, 5)] : this.tileId(x, y, 5) : 0; 
+    };
 
     Game_Map.prototype.changeRegionId = function (x, y, value) {
         if (!this._changedRegions[x]) this._changedRegions[x] = [];
         this._changedRegions[x][y] = value;
     };
 
-    Game_Map.prototype.switchRegionId = function (id1, id2) { this._switchedRegions[id1] = id2; }
+    Game_Map.prototype.switchRegionId = function (id1, id2) { 
+        this._switchedRegions[id1] = id2; 
+    }
 
+    Game_Map.prototype.unswitchRegionId = function (id1) { 
+        this._switchedRegions[id1] = null; 
+    }
 
 
 })();
