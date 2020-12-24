@@ -27,6 +27,7 @@
 
     // Aliases
     var _kocka_random_alias_intialize_l2h9HbeF = Game_Map.prototype.initialize;
+    var _kocka_random_alias_setup_l2h9HbeF = Game_Map.prototype.setup;
     var _kocka_random_alias_plugincommand_4qM7c0M7 = Game_Interpreter.prototype.pluginCommand;
 
 
@@ -59,6 +60,12 @@
     // Game_Map
      Game_Map.prototype.initialize = function () {
         _kocka_random_alias_intialize_l2h9HbeF.apply(this, arguments);
+        this._changedRegions = [];
+        this._switchedRegions = [];
+    };
+    // regionset up initialized on map load !
+    Game_Map.prototype.setup = function (mapId) {
+        _kocka_random_alias_setup_l2h9HbeF.apply(this, arguments);
         this._changedRegions = [];
         this._switchedRegions = [];
     };
