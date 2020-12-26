@@ -87,17 +87,21 @@ ICF.EnemiesCore.Version = 102; // 1.02
  * 
  *  - Variation will use one of these classes avoiding default.
  * 
- * prefix word
+ * prefix eval
  * 
- *  - Add a prefix to name.
+ *  - Add a prefix to name by evaluating eval. Eval has to evaluate to a string.
  * 
- * sufix word
+ * sufix eval
  * 
- *  - Add a sufix to name.
+ *  - Add a sufix to name by evaluating eval. Eval has to evaluate to a string
  * 
  * chance number
  * 
  *  - Add chance of being this variation. Minimun 1.
+ * 
+ * level eval
+ * 
+ * 	- sets the level for scaling of class-based params (only use together with class). Eval has to evaluate to a number
  * 
  * action skillId rating
  * action skillId rating condition
@@ -228,229 +232,6 @@ ICF.EnemiesCore.Version = 102; // 1.02
  * Credit to ICF-Soft.
  * This entire header must be included with plugin.
  * 
- * ============================================================================
-*/
-//=============================================================================
- /*:es
- * @plugindesc v1.02d Este complemento añade nuevas características a los
- * enemigos tales como clases, variaciones, acciones y objetos extra.
- * @author ICF-Soft [http://icfsoft.blogspot.com.es/]
- *
- * @help
- * ============================================================================
- * Introducción
- * ============================================================================
- * 
- * Con este complemento puedes añadir variaciones diferente a los enemigos
- * afectando los rasgos, experiencia, oro, nombre, etc.
- * Añade incluso clases con sus rasgos.
- * 
- * Además puedes darles más condiciones a las acciones de los enemigos y
- * acciones para variaciones y clases específicas.
- * 
- * ============================================================================
- * Uso
- * ============================================================================
- * 
- * Igual que otros complementos funciona con etiquetas en las notas.
- * Las hay para enemigos:
- * 
- * <ENEMY CLASSES: x x x x>
- * <ENEMY CLASSES: x hasta y>
- * 
- *  - Añade una lista de clases. El enemigo será de una de ellas.
- *    Puedes usar el 0 para que puede no tener ninguna.
- * 
- * <ENEMY ACTION skillId rating>
- * <ENEMY ACTION skillId rating condition>
- * 
- *  - Añade una acción. Puedes usar condiciones especiales:
- *    Turn n x
- *    HP min max (valores entre 0 y 1)
- *    MP min max (valores entre 0 y 1)
- *    State x
- *    Partylevel nivel
- *    Switch x
- *    [BATTLE|ENEMY|ENEMYSELF|TROOP|PARTY|PARTYBATTLE]Switch x
- *    Var [equal|dif|high|min|less|max] x
- *    [BATTLE|ENEMY|ENEMYSELF|TROOP|PARTY|PARTYBATTLE]Var x
- *    [TROOP|PARTY|PARTYBATTLE]Var[MIN|MAX|AVG] x
- *    Js javascript-code
- * 
- *    Puedes usar interruptores de batalla, de enemigos, etc.
- *    Puedes usar variables de batalla, de enemigos, etc.
- *    Para las variables de grupos puedes comprobar la suma, el
- *    mínimo, máximo o la media.
- *    Todos los tipos de variable admiten las comprobaciones de
- *    igual a, distinto a, mayor que, valor mínimo, menor que,
- *    o valor máximo.
- * 
- * <DROPITEM itemId ammount>
- * <DROPITEM itemId ammount rate>
- * <DROPITEM itemId ammount js javascript-code>
- * 
- *  - Añade objetos extra al enemigo:
- *    Rate es un número entre 0 y 1 con decimales.
- *    Puedes usar una fórmula para definir la probabilidad.
- * 
- * Puedes añadir armas y armaduras usando dropweapon y droparmor
- * respectivamente en lugar de dropitem.
- * 
- * Para añadir variaciones se usan las siguientes etiquetas:
- * 
- * <ENEMY VARIATION>
- * </ENEMY VARIATION>
- * 
- * Y usar los siguientes comandos:
- * 
- * classes x x x
- * 
- *  - Se escogerá una de esas clases en lugar de las habituales.
- * 
- * prefix word
- * 
- *  - Añade un prefijo al nombre.
- * 
- * sufix word
- * 
- *  - Añade un sufijo al nombre.
- * 
- * chance number
- * 
- *  - Añade la probabilidad de que salga esta variación. Mínimo 1.
- * 
- * action skillId rating
- * action skillId rating condition
- * 
- *  - Añade acciones para esa variación. Se combina con las normales.
- *    Se usa el mismo tipo de condición que en las normales.
- * 
- * dropitem itemId ammount
- * dropitem itemId ammount rate
- * dropitem itemId ammount js javascript-code
- * 
- *  - Añade objetos extra esta variación. Todos son aditivos.
- *    Puedes añadir armas y armaduras usando dropweapon y droparmor
- *    respectivamente en lugar de dropitem.
- * 
- * exp número
- * gold número
- * battlerhue número
- * battlername archivo
- * 
- *  - Cambia los valores.
- * 
- * traits x
- * 
- *  - Añade conjuntos de subrasgos de los que se crean con el main utility.
- *    Puedes añadir todos los necesarios en una linea.
- *    Puedes revisar el archivo léeme del main utility. Ejemplo:
- *    <SUBTRAITS MASTER> -Fuego
- *    elem_rate 1 1.5
- *    11 2 0.5
- *    31 2 0 -Ataque de fuego
- *    <SUBTRAITS MASTER> -Frío
- *    elem_rate 1 1.5
- *    11 2 2.1
- *    31 3 0 -Ataque de hielo
- *    </SUBTRAITS MASTER>
- * 
- * tags tag1 tag2 tag3
- * 
- *  - Añade todas las etiquetas en una sola linea.
- * 
- * Ejemplo de variaciones:
- * 
- * <ENEMY VARIATION>
- * classes 2 3 5
- * exp 500
- * battlerhue 100
- * traits 0
- * prefix Fire
- * action 5 3 battleswitch hace-frio
- * <ENEMY VARIATION>
- * traits 1
- * prefix Cold
- * action 7 3
- * </ENEMY VARIATION>
- * 
- * 
- * Para añadir variaciones en función de la clase usar las etiquetas:
- * 
- * <CLASS VARIATION classId>
- * </CLASS VARIATION>
- * 
- * Existen los siguientes comandos actualmente:
- * 
- * action skillId rating
- * action skillId rating condition
- * 
- *  - Añade acciones para esa clase. Se combina con el resto.
- *    Se usa el mismo tipo de condición que en las normales.
- * 
- * dropitem itemId ammount
- * dropitem itemId ammount rate
- * dropitem itemId ammount js javascript-code
- * 
- *  - Añade objetos extra esta clase. Todos son aditivos.
- *    Puedes añadir armas y armaduras usando dropweapon y droparmor
- *    respectivamente en lugar de dropitem.
- * 
- * traits x x x x
- * 
- *  - Añade conjuntos de subrasgos de los que se crean con el main utility.
- *    Puedes añadir todos los necesarios en una linea.
- *    Puedes revisar el archivo léeme del main utility.
- *
- * tags tag1 tag2 tag3
- * 
- *  - Añade todas las etiquetas en una sola linea.
- * 
- * 
- * Ejemplo de variantes de clases:
- * 
- * <CLASS VARIATION 2>
- * action 1 3
- * action 2 4 hp 0.1 0.5
- * <CLASS VARIATION 3>
- * action 10 5 mp 0.9 1
- * </CLASS VARIATION>
- * 
- * ============================================================================
- * Incompatibilidades
- * ============================================================================
- * 
- * No se conocen complementos que sean incompatibles hasta la fecha.
- * 
- * ============================================================================
- * Problemas conocidos
- * ============================================================================
- * 
- * Por el momento ninguno.
- * 
- * ============================================================================
- * Historial de versiones
- * ============================================================================
- *
- * Versión 1.02:
- * - Se han extendido los rasgos.
- * - Se ha añadido el sistema de etiquetas.
- *
- * Versión 1.01:
- * - Se han mejorado las condiciones para las acciones.
- * - Se ha añadido objetos extra a los enemigos, variaciones y clases.
- * - Se han añadido probabilidades a las variaciones.
- *
- * Versión 1.00:
- * - Complemento terminado.
- * 
- * ============================================================================
- * 
- * Para juegos comerciales y no comerciales.
- * Se debe incluir a ICF-Soft en los créditos.
- * Esta cabecera debe incluirse íntegramente con el plugin.
- * 
- * ============================================================================
 */
 //=============================================================================
 
@@ -516,6 +297,7 @@ ICF.NotetagsProcessor.enemiesCore = function(group) {
 			obj.enemyVariations[varIndex].extraDrops = [];
 			obj.enemyVariations[varIndex].tags = [];
 			obj.enemyVariations[varIndex].traits = [];
+			obj.enemyVariations[varIndex].level = null;
 		} else if (line.match(note1b)) {
 			ecFlag = false;
 		} else if (line.match(note2)) {
@@ -641,7 +423,7 @@ ICF.NotetagsProcessor.enemiesCore = function(group) {
 						obj.enemyVariations[varIndex].traits = obj.enemyVariations[varIndex].traits.concat(obj.subtraits[line[j]].traits);
 					}
 				} else if (line.length > 1) {
-					obj.enemyVariations[varIndex][command] = line;
+					obj.enemyVariations[varIndex][command] = line;		//?? level goes here
 				} else if (line.length == 1) {
 					obj.enemyVariations[varIndex][command] = line[0];
 				} else if (["exp","gold","battlername","battlerhue"].indexOf(command) < 0) {
@@ -733,7 +515,8 @@ ICF.NotetagsProcessor.enemiesCore = function(group) {
 ICF.EnemiesCore.initEnemy = Game_Enemy.prototype.initMembers;
 Game_Enemy.prototype.initMembers = function() {
     ICF.EnemiesCore.initEnemy.call(this);
-    this._classId = 0;
+	this._classId = 0;
+	this._level = 1;
     this._variation = {};
     this._variation.traits = [];
 };
@@ -742,26 +525,29 @@ ICF.EnemiesCore.setupEnemy = Game_Enemy.prototype.setup;
 Game_Enemy.prototype.setup = function(enemyId, x, y) {
     var variations = $dataEnemies[enemyId].enemyVariations;
     if (variations.length > 1) {
-	var allweight = 0;
-	var selected = 0;
-	for (var i = 0; i < variations.length; i++) {
-		allweight += variations[i].chance || 1;
-	}
-	allweight = Math.random() * allweight;
-	for (var i = 0; i < variations.length; i++) {
-		allweight -= variations[i].chance || 1;
-		if (allweight <= 0) {
-			selected = i;
-			break;
+		var allweight = 0;
+		var selected = 0;
+		for (var i = 0; i < variations.length; i++) {
+			allweight += variations[i].chance || 1;
 		}
-	}
-	this._variation = variations[selected];
+		allweight = Math.random() * allweight;
+		for (var i = 0; i < variations.length; i++) {
+			allweight -= variations[i].chance || 1;
+			if (allweight <= 0) {
+				selected = i;
+				break;
+			}
+		}
+		this._variation = variations[selected];
     } else if (variations.length == 1) {
-	this._variation = variations[0];
+		this._variation = variations[0];
     }
     var classes = this._variation.classes || $dataEnemies[enemyId].enemyClasses;
     if (classes.length > 0) this._classId = classes[Math.floor(Math.random() * classes.length)];
-    ICF.EnemiesCore.setupEnemy.call(this, enemyId, x, y);
+	ICF.EnemiesCore.setupEnemy.call(this, enemyId, x, y);
+	if(this._variation['level']!==null) {	//?? set level by eval
+		this.setLevel(eval(this._variation['level']));
+	}
 };
 
 ICF.EnemiesCore.makeDropItems = Game_Enemy.prototype.makeDropItems;
@@ -847,7 +633,9 @@ Game_Enemy.prototype.battlerHue = function() {
 };
 
 Game_Enemy.prototype.originalName = function() {
-    return (this._variation.prefix ? this._variation.prefix : '') + this.enemy().name + (this._variation.sufix ? this._variation.sufix : '');
+	return (this._variation.prefix ? eval(this._variation.prefix) : '') + 
+		this.enemy().name + 
+		(this._variation.sufix ? eval(this._variation.sufix) : '');	//?? added eval for dynamic generation
 };
 
 Game_Enemy.prototype.name = function() {
@@ -937,11 +725,40 @@ Game_Enemy.prototype.meetsVariableCondition = function(param1, param2, param3, p
         return ICF.MainUtility.CheckVar(param3, $gameVariables.value(param1), param4);
     }
 };
+//?? use levels for classbased enemies
+ICF.EnemiesCore.paramBase = Game_Enemy.prototype.paramBase;
+Game_Enemy.prototype.paramBase = function(paramId) {
+	if (this._classId === 0) {
+		return ICF.EnemiesCore.paramBase.call(this, paramId);
+	}
+	else {
+		return this.currentClass().params[paramId][this._level];
+	}
+};
+Game_Enemy.prototype.maxLevel = function() {
+    return 99;
+  };
+  
+Game_Enemy.prototype.minLevel = function() {
+return 1;
+};
+Game_Enemy.prototype.level = function() {
+    return this._level;
+};
+Game_Enemy.prototype.setLevel = function(num) {
+this._level = Math.min(Math.max(this.minLevel(), num), this.maxLevel());
+};
 
+//add level to default level
+Game_Enemy.prototype.addLevel = function(num) {
+this._level = Math.min(Math.max(this.minLevel(), this._level + num), this.maxLevel());
+};
 Game_Enemy.prototype.actionList = function() {
 	//?? there might no variation defined
 	return this.enemy().actions.concat(this._variation.actions ? this._variation.actions:[]).
 		concat((this.classVariation())? this.classVariation().actions : []);
+
+	//#todo: add action from class?
 };
 
 Game_Enemy.prototype.makeActions = function() {

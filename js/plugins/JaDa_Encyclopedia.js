@@ -15,7 +15,7 @@ JaDa.Codex.version = 1.00;
 * 
 * @param ImageDir
 * @desc Directory for images relative to img
-* @default Pictures
+* @default img/pictures/
 
 * @param Categorys
 * @type string[]
@@ -40,19 +40,13 @@ JaDa.Codex.version = 1.00;
 * @param ---Codex List---
 * @default
 *
-* @param Entry 1
+* @param Entrys
 * @parent ---Codex List---
-* @type struct<Entry>
+* @type struct<Entry>[]
 * @desc Modify the data used by this  entry.
 * Refer to Help for more information about each setting.
 * @default
 *
-* @param Entry 2
-* @parent ---Codex List---
-* @type struct<Entry>
-* @desc Modify the data used by this  entry.
-* Refer to Help for more information about each setting.
-* @default
 */
 /* ----------------------------------------------------------------------------
  * Codex Parameter Structure
@@ -60,13 +54,15 @@ JaDa.Codex.version = 1.00;
  */
 /*~struct~Entry:
  *
+ * @param EntryId
+ * @desc Unique Id of the entry.
+ * 
  * @param Title
  * @desc Title of the quest.
  * Text codes allowed.
  * @default \i[87]Untitled Quest
  *
  * @param Type
- * @parent Title
  * @type combo
  * @option Main Quests
  * @option Side Quests
@@ -80,14 +76,18 @@ JaDa.Codex.version = 1.00;
  */ 
  /*~struct~Page:
  *
+ * @param PageName
+ * @desc Name of page; leave empty for just numbering from 1..
+ * @default 
+ * 
  * @param Description
  * @desc Text below Picture
  * Text codes allowed.
  * @default \i[87]Untitled Quest
  *
  * @param Image
- * @desc Image name (without .png) relative to Image-Dir
- * @default Pic_blank
+ * @desc Image name (without .png) relative to Image-Dir, empty for none
+ * @default 
 */
 /* ----------------------------------------------------------------------------
 * CategoryWindow Parameter Structure
@@ -351,47 +351,55 @@ JaDa.Param.CodexDataWindow = JSON.parse(JaDa.Parameters['Codex Data Window']);
 //=============================================================================
 // DataManager
 //=============================================================================
-var $dataCodex = [null];
+var $dataCodex = {};
 JaDa.Codex.totalCount = 0;
 
-DataManager.codexDatabaseAdd = function(id, data) {
-    if (!data) return $dataCodex.push(null);
-    data = this.codexDataFailsafe(id, data);
+DataManager.codexDatabaseAdd = function( data) {
+    if (!data) return
+    data = this.codexDataFailsafe( data);
     var type = data['Type'];
-    var objectives = []; //JSON.parse(data['Objectives List']);
-    objectives.unshift('');
-    var visibleObjectives = []; //JSON.parse(data['Visible Objectives']);
-    for (var i = 0; i < visibleObjectives.length; ++i) {
-        visibleObjectives[i] = parseInt(visibleObjectives[i]);
-    };
+    var pages = JSON.parse(data['Pages']);
     var entry = {
       name: data['Title'],
-      id: id,
+      id: String(data['EntryId']),
       type: type,
-      objectives: objectives,
-      visibleObjectives: visibleObjectives
+      pages: []
     };
-    $dataCodex[id] = entry;
+    for(var i=0;i<pages.length;i++) {
+        entry.pages.push(JSON.parse(pages[i]));
+    }
+    $dataCodex.catList[entry.type].push(entry.id);
+    if(Object.keys($dataCodex.entryList).indexOf(entry.id)>=0) alert(("EntryId not unique: ").concat(entry.id));
+    $dataCodex.entryList[entry.id] = entry;
     JaDa.Codex.totalCount += 1;
   };
 
-DataManager.codexDataFailsafe = function(id, data) {
+DataManager.codexDataFailsafe = function( data) {
+    if (data['EntryId']==null || data['EntryId']==undefined || data['EntryId']=='') 
+        alert(("EntryId not properly set: ").concat(data['Title']));
     if (!data['Title']) data['Title'] = "????";
-    if (!data['Type']) data['Type'] = "Lore";
-    if (data['Objectives List'] === '[]') data['Objectives List'] = "[\"\\\"\\\"\"]";
-    if (!data['Visible Objectives']) data['Visible Objectives'] = "[\"1\"]";
+    //if (!data['Type']) data['Type'] = "Lore"; 
+    if (data['Pages'] === '[]') data['Pages'] = "[\"\\\"\\\"\"]";
     return data;
 };
 DataManager.codexDatabaseCreate = function() {
-    $dataCodex = [null];
-    //read data from plugin setting...
-    for (var i = 1; i <= 100; ++i) {
-      var data = JSON.parse(JaDa.Parameters['Entry ' + i] || 'null');
-      if (!data) continue;
-      this.codexDatabaseAdd(i, data);
-    };
+    //$dataCodex = [null];
+    $dataCodex.catList = new Object();      //catList is a collection of category-objects that have each a list of assigned entrysIds
+    $dataCodex.entryList = new Object();    //entryList is a collection of entry-objects, their key is the entryId
+    for(var i=0; i<JaDa.Param.Categorys.length;i++) {
+        $dataCodex.catList[JaDa.Param.Categorys[i]] = [];
+    }
+    var entrys = JSON.parse(JaDa.Parameters['Entrys']);
+    for (var i = 0; i < entrys.length; ++i) {
+        this.codexDatabaseAdd(JSON.parse(entrys[i]));
+    }
+    //console.log($dataCodex);
   };
-  
+
+ImageManager.picturegallery = function(filename) {
+    return this.loadBitmap(JaDa.Param.ImageDir, filename, 0, true);
+}; 
+//load data 
 DataManager.codexDatabaseCreate();
 
 //=============================================================================
@@ -405,25 +413,26 @@ Game_System.prototype.initialize = function() {
 };
 
 Game_System.prototype.initCodexSettings = function() {
-    this._codexKnown = this._questsKnown || [];
+    this._codexKnown = this._codexKnown || {};  //collection of objects where key is entryId and the data is a list of pageId
 };
 
-Game_System.prototype.getEntrysAvailable = function() {
+Game_System.prototype.getKnownCodexEntrys = function() {
     this.initCodexSettings();
-    var result = [];
+    return this._codexKnown;
+/*     var result = [];
     var length = this._codexKnown.length;
     for (var i = 0; i < length; ++i) {
       var Id = this._codexKnown[i];
       //if (this._questsCompleted.contains(Id)) continue;
       result.push(Id);
     }
-    return result;
+    return result; */
   };
 
-Game_System.prototype.getAllEntrys = function() {
+/* Game_System.prototype.getAllCodexEntrys = function() {
     this.initQuestSettings();
     return this._codexKnown;
-  };
+  }; */
 
   Game_System.prototype.getEntrysForType = function(category, type) {
     this.initQuestSettings();
@@ -446,21 +455,16 @@ Game_System.prototype.getAllEntrys = function() {
     return result;
   };
 
-  Game_System.prototype.entryAdd = function(entryId,pageId = 0) {
+  Game_System.prototype.codexEntryAdd = function(entryId,pageId) {
     this.initQuestSettings();
-    if (this._codexKnown.contains(entryId)) return;
-    var questData = $dataCodex[entryId];
-    if (!questData) return;
-    this._codexKnown.push(entryId);
-    this._codexKnown.sort(function(a, b) {
-      return a - b;
-    });
-    //this._questsDescription[entryId] = 1;
-    //this._questsObjectives[entryId] = [];
-    for (var i = 0; i < questData['visibleObjectives'].length; ++i) {
-      var value = questData['visibleObjectives'][i];
-      //this._questsObjectives[entryId].push(value);
+    if (this._codexKnown.hasOwnProperty(entryId)) {
+      var _entrys = this._codexKnown[entryId];
+      if(_entrys.contains(pageId)) return;    
+    } else {
+      this._codexKnown[entryId] = [];
     }
+    this._codexKnown[entryId].push(pageId);
+     
     //#todo this.questAddCustomEval(entryId);
   };
   
@@ -509,6 +513,7 @@ function Window_CodexCategories() {
     var x = Math.round(eval(this.settings('X')));
     var y = Math.round(eval(this.settings('Y')));
     Window_Command.prototype.initialize.call(this, x, y);
+    this.maxCols();
     this.opacity = Math.round(eval(this.settings('Standard Opacity')));
   };
   
@@ -594,48 +599,48 @@ function Window_CodexCategories() {
   Window_CodexCategories.prototype.loadWindowskin = function() {
     this.windowskin = ImageManager.loadSystem(this.settings('Window Skin'));
   };
-  
+  //this creates the selection menu
   Window_CodexCategories.prototype.makeCommandList = function() {
-    //var list = JSON.parse(this.settings('Category Order'));
-    if(this._CatMode ==2) {
-        var list = ['pag1','pag2'];
+    if(this._CatMode ==2) { // show page for _currEntry
+        var _entry = $dataCodex.entryList[this._currEntry];
+        var list = []    
+        for (var i=0; i< _entry.pages.length; i++) {
+          _page = _entry.pages[i];
+          if($gameSystem.getKnownCodexEntrys()[_entry.id].contains(i)) {
+            list.push({ 'id':i, enab:true,'text':_page.PageName===''? String(i+1) :_page.PageName });     
+          } else {
+            list.push({ 'id':i,enab:false,'text':'???'}); 
+          }
+        }
+    } else if(this._CatMode ==1) {  //show entry for _currCategory 
+        var listIds = $dataCodex.catList[this._currCategory];
+        var list = []
+        for (var i=0; i< listIds.length; i++) {
+            _entry = $dataCodex.entryList[listIds[i]];
+            if($gameSystem.getKnownCodexEntrys().hasOwnProperty(_entry.id)) {
+              list.push({ 'id':_entry.id,enab:true,'text':_entry.name });    
+            } else {
+              list.push({ 'id':_entry.id,enab:false,'text':'???' });  
+            }
+        }
 
-    } else if(this._CatMode ==1) {
-        var list = ['cat1','cat2'];
-
-    } else {
+    } else {    //show categorys
         var list =  JaDa.Param.Categorys;
     }
     
     var length = list.length;
     for (var i = 0; i < length; ++i) {
       var listItem = list[i];
-/*       switch (listItem) {
-      case 'available':
-        var fmt = this.settings('Available Text');      //#todo
-        var number = $gameSystem.totalQuestsAvailable();
-        break;
-      case 'completed':
-        var fmt = this.settings('Completed Text');
-        var number = $gameSystem.totalQuestsCompleted();
-        break;
-      case 'failed':
-        var fmt = this.settings('Failed Text');
-        var number = $gameSystem.totalQuestsFailed();
-        break;
-      case 'all':
-        var fmt = this.settings('All Text');
-        var number = $gameSystem.totalQuestsKnown();
-        break;
-      case 'cancel':
-        var text = this.settings('Cancel Text');
-        this.addCommand(text, 'cancel');
-        continue;
-        break;
-      } */
-      //number = Yanfly.Util.toGroup(number);
-      //var text = fmt.format(number);
-      this.addCommand(listItem, 'category', true, listItem);
+      var _text = listItem;
+      var _ext = _text;
+      var _enab = true;
+      //either the list is a simple string[] or list of object with those propertys
+      if(listItem.hasOwnProperty('text')) {
+        _text = listItem['text'];
+        _ext = listItem['id'];
+        _enab = listItem['enab'];
+      }
+      this.addCommand(_text, 'category', _enab, _ext);
     }
   };
   Window_CodexCategories.prototype.showPages = function(entry) {
@@ -705,12 +710,24 @@ function Window_PageData() {
   Window_PageData.prototype.initialize = function() {
     var width = this.windowWidth();
     var height = this.windowHeight();
-    var x = 400+Math.round(eval(this.settings('X')));
+    var x = Math.round(eval(this.settings('X')));
     var y = Math.round(eval(this.settings('Y')));
     this._allTextHeight = 0;
     this._countdown = 0;
     this._arrowBlinkTimer = 0;
-    Window_Selectable.prototype.initialize.call(this, x, y, width, height);
+    
+    Window_Base.prototype.initialize.call(this, x, y, width, height);
+    this._info = new Sprite( new Bitmap(32,32));
+    this._info.visible = false;
+    this._info._duration = 0;
+    this._info._phase = [0,-1,0];
+    this._info._index = 0;
+    //image anchored to lower border
+    this._info.anchor.x = 0.5;
+    this._info.anchor.y = 1;
+    this._info.x = width / 2 ;
+    this._info.y = height - this.standardPadding() ;
+    this.addChildToBack(this._info);
     this.setEntryId('','');
     this.opacity = Math.round(eval(this.settings('Standard Opacity')));
   };
@@ -721,14 +738,15 @@ function Window_PageData() {
   
   Window_PageData.prototype.windowWidth = function() {
     if (this._windowWidth === undefined) {
-      this._windowWidth = 200;//Math.round(eval(this.settings('Width')));
+        //fill out room next to category
+      this._windowWidth = Math.round(Graphics.boxWidth-eval(JaDa.Param.CodexCategoryWindow['Width']));
     }
     return this._windowWidth;
   };
   
   Window_PageData.prototype.windowHeight = function() {
     if (this._windowHeight === undefined) {
-      this._windowHeight = 200;//Math.round(eval(this.settings('Height')));
+      this._windowHeight = Graphics.boxHeight;//Math.round(eval(this.settings('Height')));
     }
     return this._windowHeight;
   };
@@ -793,7 +811,7 @@ function Window_PageData() {
         this._pageId =pageId;
       this._countdown = 30;
       this.refresh();
-      //this.activate();
+      //this.activate();  this panel has no input-controls, so dont activate
     }
   };
 
@@ -810,7 +828,7 @@ function Window_PageData() {
     }
   };
   Window_PageData.prototype.update = function() {
-    Window_Selectable.prototype.update.call(this);
+    //Window_Selectable.prototype.update.call(this);
     this.updateCountdown();
     //if (this.isOpenAndActive()) this.updateKeyScrolling();
   };
@@ -833,6 +851,7 @@ function Window_PageData() {
     this._allTextHeight = this.calcTextHeight(textState, true);
     this._allTextHeight *= (wordwrap) ? 10 : 1;
     this.createContents();
+    this.showNoImage();
     this.drawPageTextEx(text, 0, 0);
   };
 
@@ -843,9 +862,11 @@ function Window_PageData() {
     if (!questData) return;
     var fmt = Window_QuestData._questDataFmt;
     */
+   var _entry = $dataCodex.entryList[this._entryId]; 
+   var _page = _entry.pages[this._pageId];
    var fmt = Window_PageData._questNoDataFmt;
-    var wordwrap = fmt.match(/<(?:WordWrap)>/i);
-    var text = this._entryId.concat(this._pageId);//fmt.format(title, difficulty, from, location, description,objectives, rewards, subtext);
+    var wordwrap = true; //fmt.match(/<(?:WordWrap)>/i); //??
+    var text = ("<WordWrap>").concat(_entry.name,' - ', _page.PageName, '<br>').concat(_page.Description);
     var textState = { index: 0 };
     textState.originalText = text;
     textState.text = this.convertEscapeCharacters(text);
@@ -853,6 +874,7 @@ function Window_PageData() {
     this._allTextHeight = this.calcTextHeight(textState, true);
     this._allTextHeight *= (wordwrap) ? 10 : 1;
     this.createContents();
+    this.showImage();
     this.drawPageTextEx(text, 0, 0);
   };
   Window_PageData.prototype.drawPageTextEx = function(text, x, y) {
@@ -860,6 +882,7 @@ function Window_PageData() {
       var textState = { index: 0, x: x, y: y, left: x };
       textState.text = this.convertEscapeCharacters(text);
       textState.height = this.calcTextHeight(textState, false);
+      
       this.resetFontSettings();
       while (textState.index < textState.text.length) {
         this.processCharacter(textState);
@@ -870,6 +893,21 @@ function Window_PageData() {
       return 0;
     }
   };
+  Window_PageData.prototype.showNoImage = function() {
+    this._info.visible = false;
+ };
+  Window_PageData.prototype.showImage = function() {
+    var _imageName = $dataCodex.entryList[this._entryId].pages[this._pageId].Image
+    if(_imageName==='') {
+        this.showNoImage();
+        return;
+    }
+    this._info.bitmap = ImageManager.picturegallery(_imageName);
+	this._info.visible = true;
+	this._info._duration = 0;
+	this._info._phase = [0,-1,0];
+	this._info._index = 0;
+};
 //=============================================================================
 // Scene_Menu
 //=============================================================================
