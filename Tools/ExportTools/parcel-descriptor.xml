@@ -8,4 +8,12 @@
         <logicalname value="QuestExport.js"/>
         <functionname value="QuestExport.js"/>
     </script>
+    <script language="JavaScript">
+        <locale lang="en">
+            <displayname value="CodexExport.js"/>
+            <description>CodexExport.js</description>
+        </locale>
+        <logicalname value="CodexExport.js"/>
+        <functionname value="CodexExport.js"/>
+    </script>
 </parcel>

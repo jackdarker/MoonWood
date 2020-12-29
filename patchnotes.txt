@@ -4,4 +4,8 @@ Click |X| to close view ---->
 
 V00.01	getting familiar with RPGMaker
 known bugs & todos:
+- 
+- add custom status-pane for "devious" status
+- add autobattle
 - display state-info in Map-Statusscreen; how to add description to states?
+- create Credits-Scene;
