@@ -1,9 +1,13 @@
 Images , Tiles, Sprites:
 Avery
-hiddenone
+Hiddenone
 PandaMaru
+Whitedragon
+
+Sound & Music
 
 Plugins & Scripts:
+Galv
 Yanfl
 Hime
 WAY
